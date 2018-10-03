@@ -22,3 +22,5 @@ Then type these commands
     git commit -m "First Migration Commit"
     git remote add origin paste_your_URL_here
     git push -u origin master
+
+3. something
