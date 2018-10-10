@@ -1,97 +1,48 @@
-# Qwa
+# Deploy
 
-Goto Github.com
-In your account, create a New Repository
-Don't create any file inside the repository. Keep it empty. Copy its URL. It should be something like https://github.com/Username/ProjectName.git
+### Copy app from local machine
 
-Open up the terminal and redirect to your Visual Studio Project directory
-
-1. clone the repo
-
-    git clone https://github.com/zejafo/Qwa
-
-2. Configure your credentials
-
-    git config --global user.name "your_git_username"
-    git config --global user.email "your_git_email"
-
-Then type these commands
-
-    git init
-    git add .
-    git commit -m "First Migration Commit"
-    git remote add origin paste_your_URL_here
-    git push -u origin master
-
-3. something
-
-    pscp -r c:/_projects/Qwa/Qwa.Angular/dist/* root@94.177.250.93:/root/
+pscp -r c:/_projects/Qwa/Qwa.Angular/dist/* root@94.177.250.93:/root/
 
 
+## Configure apache
 
-4. https://stackoverflow.com/questions/42755839/add-multiple-project-in-one-repository-github
-
-https://stackoverflow.com/a/44093312/1306159
-
-powershell:
-while($true){nslookup zejafo.it;sleep 10}
-
-
-https://www.digitalocean.com/community/tutorials/how-to-set-up-apache-virtual-hosts-on-centos-6
-
-
-Set Up
-The steps in this tutorial require the user to have root privileges. You can see how to set that up in the Initial Server Setup in steps 3 and 4. Furthermore, if I reference the user in a step, I’ll use the name www. You can implement whatever username suits you.
+### Install apache
 
 Additionally, you need to have apache already installed and running on your virtual server If this is not the case, you can download it with this command:
 
-sudo yum install httpd
-Step One— Create a New Directory
-The first step in creating a virtual host is to a create a directory where we will keep the new website’s information.
+    sudo yum install httpd
 
-This location will be your Document Root in the Apache virtual configuration file later on. By adding a -p to the line of code, the command automatically generates all the parents for the new directory.
+### Create a New Directory
 
-sudo mkdir -p /var/www/example.com/public_html
-You will need to designate an actual DNS approved domain, or an IP address, to test that a virtual host is working. In this tutorial we will use example.com as a placeholder for a correct domain name.
+    sudo mkdir -p /var/www/example.com/public_html
 
-However, should you want to use an unapproved domain name to test the process you will find information on how to make it work on your local computer in Step Six.
+### Grant Permissions
 
-Step Two—Grant Permissions
 We need to grant ownership of the directory to the user, instead of just keeping it on the root system.
 
- sudo chown -R apache:apache /var/www/example.com/public_html
+    sudo chown -R apache:apache /var/www/example.com/public_html
+
 Additionally, it is important to make sure that everyone will be able to read our new files.
 
- sudo chmod 755 /var/www
-Now you are all done with permissions.
 
-Step Three— Create the Page
-We need to create a new file called index.html within our configurations directory.
+    sudo chmod 755 /var/www
 
-sudo vi /var/www/example.com/public_html/index.html
-We can add some text to the file so we will have something to look at when the IP redirects to the virtual host.
+### Turn on Virtual Hosts
 
-    <html>
-      <head>
-        <title>www.example.com</title>
-      </head>
-      <body>
-        <h1>Success: You Have Set Up a Virtual Host</h1>
-      </body>
-    </html>
-Save and Exit
-
-Step Four—Turn on Virtual Hosts
 The next step is to enter into the apache configuration file itself.
 
-sudo vi /etc/httpd/conf/httpd.conf
+    sudo vi /etc/httpd/conf/httpd.conf
+
 There are a few lines to look for.
 
 Make sure that your text matches what you see below.
 
     #Listen 12.34.56.78:80
     Listen 80
-    Scroll down to the very bottom of the document to the section called Virtual Hosts.
+
+Scroll down to the very bottom of the document to the section called Virtual Hosts.
+
 
     NameVirtualHost *:80
     #
@@ -114,59 +65,173 @@ Make sure that your text matches what you see below.
         ErrorLog /var/www/example.com/error.log
         CustomLog /var/www/example.com/requests.log
     </VirtualHost>
+
 The most important lines to focus on are the lines that say NameVirtualHost, Virtual Host, Document Root, and Server Name. Let’s take these one at a time.
 
-Uncomment (remove the number sign) NameVirtualHost without making any changes. The star means that any IP address going through port 80 will be a virtual host. As your system probably only has one IP address this is not an issue—however, if you prefer, you can replace the star with your IP address.
-You can leave the rest of the number marks in place until you reach the line <VirtualHost *:80> . Uncomment everything from there through <VirtualHost>.
-Leave <VirtualHost *:80> as is—its details must match with those in the NameVirtual Host section. If you replaced the star with your IP address in that section, be sure to do the same here.
-Document Root is key! For this section, write in the extension of the new directory created in Step One. If the document root is incorrect or absent you will not be able to set up the virtual host.
-Server Name is another important piece of information, containing the virtual host’s domain name (eg. www.example.com). Make sure that you spell the domain out in full; we will put in any alternate possibilities in the next line.
-ServerAlias is a new line in the config file that is not there by default. Adding it will allow you to list a few variants of the domain name, for example without the www in the front.
-The rest of the lines in this section are not required to set up a virtual host. However, it is still helpful to know what they do.
-
-Server admin asks for the webmaster’s email.
-The Error Logs and Custom Logs keep track of any issues with the server. The error log covers issues that arise while maintaining the server, and the custom log tracks server requests. You can set up a custom location for these processes.
-Make sure that <VirtualHost> is uncommented; then save and exit.
-Step Five—Restart Apache
-We’ve made a lot of the changes to the configuration. However, they will not take effect until Apache is restarted.
+### Restart Apache
 
 First stop all apache processes:
 
-sudo apachectl -k stop
+    sudo apachectl -k stop
+
 Then start up apache once again.
 
-sudo /etc/init.d/httpd start
-You may see the following error:
+    sudo /etc/init.d/httpd start
 
-Could not reliably determine the server's fully qualified domain name, using 127.0.0.1 for ServerName
-The message is just a warning, and you will be able to access your virtual host without any further issues.
+Alternative command
 
-Optional Step Six—Setting Up the Local Hosts
-If you have pointed your domain name to your virtual private server’s IP address you can skip this step—you do not need to set up local hosts. Your virtual hosts should work. However, if want to try out your new virtual hosts without having to connect to an actual domain name, you can set up local hosts on your computer alone. For this step, make sure you are on the computer itself, not your droplet.
+    service httpd restart
 
-To proceed with this step you need to know your computer’s administrative password, otherwise you will be required to use an actual domain name to test the virtual hosts.
+# CentOs
 
-If you are on a Mac or Linux, access the root user (su) on the computer and open up your hosts file:
+## Tools
 
-nano /etc/hosts
-If you are on a Windows Computer, you can find the directions to alter the host file on the Microsoft site
+### Putty
 
-You can add the local hosts details to this file, as seen in the example below. As long as that line is there, directing your browser toward, say, example.com will give you all the virtual host details for the corresponding IP address.
+## Bash commands
 
-    # Host Database
-    # localhost is used to configure the loopback interface
-    # when the system is booting.  Do not change this entry.
-    #
-    127.0.0.1       localhost
+## Vim
 
-    #Virtual Hosts
-    12.34.56.789    www.example.com
+### See history
 
-However, it may be a good idea to delete these made up addresses out of the local hosts folder when you are done to avoid any future confusion.
+You can type history on a terminal to view all the previous executed commands.
 
-Step Seven—RESULTS: See Your Virtual Host in Action
-Once you have finished setting up your virtual host, you can see how it looks online. Type your ip address into the browser (ie. http://12.34.56.789)
+### Clear terminal history
 
-It should look somewhat similar to my handy screenshot
+    cat /dev/null > ~/.bash_history && history -c && exit
 
-Good Job!
+## Apache
+
+# Postgresql
+
+## Common
+
+### Connect with local IDE
+
+#### First approach
+
+connect to PostgreSQL server: FATAL: no pg_hba.conf entry for host
+
+[https://dba.stackexchange.com/questions/83984/connect-to-postgresql-server-fatal-no-pg-hba-conf-entry-for-host](https://dba.stackexchange.com/questions/83984/connect-to-postgresql-server-fatal-no-pg-hba-conf-entry-for-host)
+
+Add or edit the following line in your postgresql.conf :
+
+    listen_addresses = '*'
+
+Add the following line as the first line of pg_hba.conf. It allows access to all databases for all users with an encrypted password:
+
+# TYPE DATABASE USER CIDR-ADDRESS METHOD host all all 0.0.0.0/0 md5
+
+#### Second approach
+
+This solution works for IPv4 / IPv6
+
+    nano /var/lib/pgsql/data/pg_hba.conf
+
+**add at final**
+
+    host all all ::1/128 md5 host all postgres 127.0.0.1/32 md5
+
+and then restart postgresql service
+
+    /etc/init.d/postgresql restart
+
+## Scripts
+
+### Kill a postgresql session/connection
+
+[https://stackoverflow.com/questions/5108876/kill-a-postgresql-session-connection](https://stackoverflow.com/questions/5108876/kill-a-postgresql-session-connection)
+
+You can use [pg_terminate_backend()](http://www.postgresql.org/docs/current/static/functions-admin.html) to kill a connection. You have to be superuser to use this function. This works on all operating systems the same.
+
+SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE -- don't kill my own connection! pid <> pg_backend_pid() -- don't kill the connections to other databases AND datname = 'database_name' ;
+
+Before executing this query, you have to [REVOKE](http://www.postgresql.org/docs/current/interactive/sql-revoke.html) the CONNECT privileges to avoid new connections:
+
+REVOKE CONNECT ON DATABASE dbname FROM PUBLIC, username;
+
+If you're using Postgres 8.4-9.1 use procpid instead of pid
+
+SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE -- don't kill my own connection! procpid <> pg_backend_pid() -- don't kill the connections to other databases AND datname = 'database_name' ;
+
+### Init DB
+
+create schema qwa;
+
+### Install additional modules
+
+    yum update
+
+and then
+
+    sudo yum install postgresql-contrib
+
+[https://tomharrisonjr.com/uuid-or-guid-as-primary-keys-be-careful-7b2aa3dcb439](https://tomharrisonjr.com/uuid-or-guid-as-primary-keys-be-careful-7b2aa3dcb439)
+
+[https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-centos-7](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-centos-7)
+
+[https://www.centos.org/forums/viewtopic.php?t=55818](https://www.centos.org/forums/viewtopic.php?t=55818)
+
+## Bash scripts
+
+### gets the psql command line
+
+As the default configuration of Postgres is, a user called **_postgres _**is made on and the user **_postgres_** has full superadmin access to entire PostgreSQL instance running on your OS.
+
+    $ sudo -u postgres psql
+
+The above command gets you the psql command line interface in full admin mode.
+
+### Exit from postgre command line
+
+Type \q and then press ENTER to quit psql . Ctrl + D is what I usually use to exit psql console. Try: Ctrl + Z - this sends the TSTP signal ( TSTP is short for "terminal stop")
+
+### Creating user
+
+    $ sudo -u postgres createuser <username>
+
+### Creating Database
+
+    $ sudo -u postgres createdb <dbname>
+
+### Giving the user a password
+
+    $ sudo -u postgres psql
+
+    psql=# alter user <username> with encrypted password '<password>';
+
+### Granting privileges on database
+
+    psql=# grant all privileges on database <dbname> to <username> ;
+
+# Git & Github
+
+### Clone repository and commit changes
+
+Goto Github.com
+
+In your account, create a New Repository
+
+Don't create any file inside the repository. Keep it empty. Copy its URL. It should be something like https://github.com/Username/ProjectName.git
+
+Open up the terminal and redirect to your Visual Studio Project directory
+
+1. clone the repo
+
+        git clone https://github.com/zejafo/Qwa
+2.
+        git config --global user.name "your_git_username"
+
+        git config --global user.email "your_git_email"
+
+3. Then type these commands
+
+        git init
+
+        git add .
+
+        git commit -m "First Migration Commit"
+
+        git remote add origin paste_your_URL_here
+
+        git push -u origin master
