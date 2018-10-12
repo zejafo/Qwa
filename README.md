@@ -2,7 +2,7 @@
 
 ### Copy app from local machine
 
-pscp -r c:/_projects/Qwa/Qwa.Angular/dist/* root@94.177.250.93:/root/
+    pscp -r c:/_projects/Qwa/Qwa.Angular/dist/* root@*.*.*.*:/root/
 
 
 ## Configure apache
